@@ -25,6 +25,26 @@ def version():
     typer.echo(f"pixiefairy - Pixiecore API Companion v{VERSION}")
 
 
+@cli.command(help="Validate the configuration files")
+def validate(    config_file: Optional[Path] = typer.Option(
+        "config.yaml",
+        "-c",
+        "--config",
+        help="configuration yaml file",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        writable=False,
+        resolve_path=True,
+        allow_dash=False,
+    )):
+
+    if not cfg.fromFile(config_file):
+        logging.error("Validating configuration file failed")
+        exit(1)
+    logging.info("Configuration file is valid")
+
 @cli.command(help="Start the daemon")
 def start(
     config_file: Optional[Path] = typer.Option(
