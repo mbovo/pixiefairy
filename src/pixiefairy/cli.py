@@ -36,7 +36,7 @@ def start(
         file_okay=True,
         dir_okay=False,
         readable=True,
-        writable=True,
+        writable=False,
         resolve_path=True,
         allow_dash=False,
     ),

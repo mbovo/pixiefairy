@@ -1,5 +1,6 @@
 {
   buildPythonApplication,
+  nix-gitignore,
   lib,
   poetry-core,
   setuptools, # A runtime dependency (resolves package version)
@@ -18,9 +19,9 @@
 }:
 buildPythonApplication {
   pname = "pixiefairy";
-  version = "0.2.0";
+  version = "0.2.1";
   pyproject = true;
-  src = lib.cleanSource ./.;
+  src = nix-gitignore.gitignoreSource [ ] ./.;
   build-system = [ poetry-core ];
   dependencies = [
     pyyaml
