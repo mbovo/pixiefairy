@@ -1,15 +1,18 @@
 import signal
 import typer
-import pkg_resources
 import logging
 import uuid
 from pathlib import Path
 from typing import Optional
+from importlib.metadata import version, PackageNotFoundError
 
 from . import server, common
 from .config import cfg
 
-VERSION = pkg_resources.get_distribution("pixiefairy").version
+try:
+    VERSION = version("pixiefairy")
+except PackageNotFoundError:
+    VERSION = "unknown"
 
 cli = typer.Typer()
 

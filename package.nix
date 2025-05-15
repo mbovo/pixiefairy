@@ -3,7 +3,6 @@
   nix-gitignore,
   lib,
   poetry-core,
-  setuptools, # A runtime dependency (resolves package version)
 
   pyyaml,
   click,
@@ -19,7 +18,7 @@
 }:
 buildPythonApplication {
   pname = "pixiefairy";
-  version = "0.2.3";
+  version = "0.2.4";
   pyproject = true;
   src = nix-gitignore.gitignoreSource [ ] ./.;
   build-system = [ poetry-core ];
@@ -35,7 +34,5 @@ buildPythonApplication {
     typer
     urllib3
     uvicorn
-
-    setuptools # pkg_resources
   ];
 }
