@@ -11,7 +11,6 @@ def parse_mac(mac: str) -> BootResponse:
     net = {k: v for k, v in cfg.settings.defaults.net.dict().items() if k not in ["dhcp"]}
     use_dhcp = cfg.settings.defaults.net.dhcp
     net_cmdline = ""
-    role = cfg.settings.defaults.role
 
     if cfg.settings.defaults.deny_unknown_clients and mac not in cfg.settings.mapping:
         logging.warning(f"Unknown mac address {mac}, blocking boot process")
@@ -34,10 +33,6 @@ def parse_mac(mac: str) -> BootResponse:
         # override dhcp with parameters from mapping
         if mapping.net.dhcp is not None:
             use_dhcp = mapping.net.dhcp
-
-        # override role with paramters from mapping
-        if mapping.role is not None:
-            role = mapping.role
 
     # enable net cmdline if required (dhcp=false)
     if not use_dhcp:

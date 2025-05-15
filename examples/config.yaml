@@ -1,12 +1,21 @@
 api_key: f092f059-053d-4e7e-ad89-b49f6b004584
 defaults:
+  # required
   boot:
+    # required
     kernel: "file:///root/vmlinuz-amd64"
+    # required
     initrd: ["file:///root/initramfs-amd64.xz"]
+    # optional
     message: "Booting Talos Linux and join the cluster"
+    # optional
     cmdline: "init_on_alloc=1 slab_nomerge pti=on panic=0 consoleblank=0 printk.devkmsg=on earlyprintk=ttyS0 console=tty0 console=ttyS0 talos.platform=metal"
+
+  # required
   net:
+    # required
     dhcp: true
+    # rest are optional
     server: null
     gateway: "10.20.20.10"
     netmask: "255.255.255.0"
@@ -15,8 +24,9 @@ defaults:
     ip: null
     hostname: null
     device: null
+
+  # optional, defaults to true
   deny_unknown_clients: false
-  role: worker
 mapping:
   aa:bb:cc:dd:ee:ff:
     net:

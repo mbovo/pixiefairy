@@ -29,14 +29,12 @@ class NetworkSection(BaseModel):
 class Defaults(BaseModel):
     boot: BootSection
     net: NetworkSection
-    deny_unknown_clients: bool
-    role: str
+    deny_unknown_clients: bool = True
 
 
 class MacEntry(BaseModel):
     boot: Optional[BootSection] = None
     net: Optional[NetworkSection] = None
-    role: Optional[str] = None
 
 
 class Settings(BaseModel):
@@ -70,7 +68,6 @@ class Config:
                 boot=BootSection(kernel="", initrd=[""]),
                 net=NetworkSection(dhcp=True),
                 deny_unknown_clients=False,
-                role="worker"
             ),
             mapping={}
         )

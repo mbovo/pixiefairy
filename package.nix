@@ -19,7 +19,7 @@
 }:
 buildPythonApplication {
   pname = "pixiefairy";
-  version = "0.2.1";
+  version = "0.2.2";
   pyproject = true;
   src = nix-gitignore.gitignoreSource [ ] ./.;
   build-system = [ poetry-core ];

@@ -12,6 +12,16 @@
 
 ## Installation
 
+### Nix (aka DeclarativeOS)
+
+Once this package is merged to nixpkgs, you can run
+
+```
+nix-shell -p pixiefairy
+```
+
+### ImperativeOS
+
 Pixiefairy requires `python >= 3.9`
 It's as easy as
 
