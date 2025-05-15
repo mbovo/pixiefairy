@@ -45,7 +45,6 @@ class Settings(BaseModel):
     listen_port: Optional[int] = None
     external_url: Optional[str] = None
     config_file: Optional[FilePath] = None
-    template_dir: Optional[FilePath] = None
     defaults: Defaults
     mapping: Optional[Dict[str, MacEntry]] = None
 

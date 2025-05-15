@@ -43,9 +43,6 @@ def start(
     listen_address: Optional[str] = typer.Option("0.0.0.0", "--listen", "-l", help="Listen address"),
     listen_port: Optional[int] = typer.Option(5000, "-p", "--port", help="Listen port"),
     external_url: Optional[str] = typer.Option(None, "-e", "--external-url", help="URL from external standpoint (like behind a proxy)"),
-    template_dir: Optional[Path] = typer.Option(
-        "./templates", "-t", "--templates", help="Templates path", exists=True, file_okay=False, dir_okay=True, readable=True, resolve_path=True, allow_dash=False
-    ),
 ):
 
     if not cfg.fromFile(config_file):
@@ -59,8 +56,6 @@ def start(
         cfg.settings.config_file = config_file
     if not cfg.settings.external_url:
         cfg.settings.external_url = external_url
-    if not cfg.settings.template_dir:
-        cfg.settings.template_dir = template_dir
 
     if cfg.settings.external_url is None:
         cfg.settings.external_url = f"http://{common.get_hostname()}:{cfg.settings.listen_port}"
