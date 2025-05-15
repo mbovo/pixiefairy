@@ -52,10 +52,11 @@ def parse_mac(mac: str) -> BootResponse:
         net_cmdline = f" ip={ip}:{server}:{gateway}:{netmask}:{hostname}:{device}:off:{dns}::{ntp}"
 
     # add extra_cmdline
+    # TODO what is talos.config
     extra_cmdline = f" talos.config={cfg.settings.external_url}/v1/cluster/{role}"
 
     ret["cmdline"] = f"{ret['cmdline']}{net_cmdline}{extra_cmdline}"
 
     logging.info(ret)
 
-    return BootResponse.parse_raw(yaml.safe_dump(ret))
+    return BootResponse(**ret)
