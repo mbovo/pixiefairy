@@ -92,3 +92,7 @@ This fork started off by refactoring `config.py` to work with `pydantic-yaml` th
 | **pydantic-yaml** | ★★☆☆☆ (risky)       | Not very popular or actively maintained; Has lead to problems in the past. |
 | **fastapi** | ★★★★☆ | Rapidly evolving but major bumps (0.XX → 1.0) are rare; keep an eye on release notes. |
 | **gevent** | ★★☆☆☆ (legacy) | Green-threading can conflict with other async libs; if you’re fully on AsyncIO, drop gevent. |
+
+## Known issues
+
+API key does nothing.

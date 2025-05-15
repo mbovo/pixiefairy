@@ -43,7 +43,6 @@ def stop():
 def webapp_run():
     """Run WEB Server"""
     global wsgi
-    print("abcd")
     try:
         uvicorn_log_config = uvicorn_config.LOGGING_CONFIG
         del uvicorn_log_config["loggers"]
