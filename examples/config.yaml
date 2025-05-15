@@ -28,9 +28,12 @@ defaults:
   # optional, defaults to true
   deny_unknown_clients: false
 mapping:
-  aa:bb:cc:dd:ee:ff:
+  aa:bb:cc:dd:ee:00:
     net:
       dhcp: true
       ip: "10.20.20.60"
       hostname: "node1"
       device: "eth0"
+  aa:bb:cc:dd:ee:01:
+    net:
+      dhcp: false

@@ -89,20 +89,15 @@ This fork started off by refactoring `config.py` to work with `pydantic-yaml` th
 
 ### Dependency stability matrix
 
-| Package           | Stability tier      | Notes & alternatives                                              |
-| ----------------- | ------------------- | ----------------------------------------------------------------- |
-| **click**         | ★★★★★ (very stable) | Mature CLI lib; minor bumps almost never break you.               |
-| **colorama**      | ★★★★★               | Simple console-color wrapper; stable.                             |
-| **shellingham**   | ★★★★★               | Tiny utility; unlikely to change.                                 |
-| **PyYAML**        | ★★★★☆ (stable)      | Battle-tested YAML parser; occasional security fixes.             |
-| **uvicorn** | ★★★★☆ | Core ASGI server; minor bumps rarely break, but watch the asyncio stack. |
-| **urllib3**       | ★★★★☆               | Core HTTP layer; well maintained by Requests team.                |
-| **loguru**        | ★★★☆☆ (moderate)    | Nice API but less widely deployed; watch for minor changes.       |
-| **typer**         | ★★★★☆               | Built on Click; quite stable, but tied to Click’s major versions. |
+| Package           | Stability tier         | Notes & alternatives                                                       |
+| ----------------- | -------------------    | -----------------------------------------------------------------          |
+| **click**         | ★★★★★ (very stable) | Mature CLI lib; minor bumps almost never break you.                        |
+| **colorama**      | ★★★★★               | Simple console-color wrapper; stable.                                      |
+| **shellingham**   | ★★★★★               | Tiny utility; unlikely to change.                                          |
+| **fastapi**       | ★★★★☆               | Rapidly evolving; keep an eye on release notes.                            |
+| **PyYAML**        | ★★★★☆ (stable)      | Battle-tested YAML parser; occasional security fixes.                      |
+| **uvicorn**       | ★★★★☆               | Core ASGI server; rarely has breaking changes.                             |
+| **typer**         | ★★★★☆               | Built on Click; quite stable, but tied to Click’s major versions.          |
+| **urllib3**       | ★★★★☆               | Core HTTP layer; well maintained by Requests team.                         |
+| **loguru**        | ★★★☆☆ (moderate)    | Nice API but less widely deployed; watch for minor changes.                |
 | **pydantic-yaml** | ★★☆☆☆ (risky)       | Not very popular or actively maintained; Has lead to problems in the past. |
-| **fastapi** | ★★★★☆ | Rapidly evolving but major bumps (0.XX → 1.0) are rare; keep an eye on release notes. |
-| **gevent** | ★★☆☆☆ (legacy) | Green-threading can conflict with other async libs; if you’re fully on AsyncIO, drop gevent. |
-
-## Known issues
-
-API key does nothing.

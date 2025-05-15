@@ -25,6 +25,7 @@ def bootstrap(macaddress: str):
     try:
         return parse_mac(macaddress)
     except Exception as e:
+        logging.warn(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 

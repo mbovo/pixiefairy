@@ -24,7 +24,7 @@ ignore = [
 
 [tool.poetry]
 name = "pixiefairy"
-version = "0.2.2"
+version = "0.2.3"
 description = "Pixiefairy a Pixiecore API server companion"
 authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
 license = "Apache-2.0"
@@ -36,7 +36,6 @@ python = "^3.10"
 click = "^8.1.2"
 colorama = "^0.4.4"
 loguru = "^0.7"
-gevent = "^24"
 PyYAML = "^6.0"
 urllib3 = "^2"
 fastapi = "^0.115"
