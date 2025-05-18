@@ -1,15 +1,18 @@
 import signal
 import typer
-import pkg_resources
 import logging
 import uuid
 from pathlib import Path
 from typing import Optional
+from importlib.metadata import version, PackageNotFoundError
 
 from . import server, common
 from .config import cfg
 
-VERSION = pkg_resources.get_distribution("pixiefairy").version
+try:
+    VERSION = version("pixiefairy")
+except PackageNotFoundError:
+    VERSION = "unknown"
 
 cli = typer.Typer()
 
@@ -25,6 +28,26 @@ def version():
     typer.echo(f"pixiefairy - Pixiecore API Companion v{VERSION}")
 
 
+@cli.command(help="Validate the configuration files")
+def validate(    config_file: Optional[Path] = typer.Option(
+        "config.yaml",
+        "-c",
+        "--config",
+        help="configuration yaml file",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        writable=False,
+        resolve_path=True,
+        allow_dash=False,
+    )):
+
+    if not cfg.fromFile(config_file):
+        logging.error("Validating configuration file failed")
+        exit(1)
+    logging.info("Configuration file is valid")
+
 @cli.command(help="Start the daemon")
 def start(
     config_file: Optional[Path] = typer.Option(
@@ -36,16 +59,13 @@ def start(
         file_okay=True,
         dir_okay=False,
         readable=True,
-        writable=True,
+        writable=False,
         resolve_path=True,
         allow_dash=False,
     ),
     listen_address: Optional[str] = typer.Option("0.0.0.0", "--listen", "-l", help="Listen address"),
     listen_port: Optional[int] = typer.Option(5000, "-p", "--port", help="Listen port"),
     external_url: Optional[str] = typer.Option(None, "-e", "--external-url", help="URL from external standpoint (like behind a proxy)"),
-    template_dir: Optional[Path] = typer.Option(
-        "./templates", "-t", "--templates", help="Templates path", exists=True, file_okay=False, dir_okay=True, readable=True, resolve_path=True, allow_dash=False
-    ),
 ):
 
     if not cfg.fromFile(config_file):
@@ -59,8 +79,6 @@ def start(
         cfg.settings.config_file = config_file
     if not cfg.settings.external_url:
         cfg.settings.external_url = external_url
-    if not cfg.settings.template_dir:
-        cfg.settings.template_dir = template_dir
 
     if cfg.settings.external_url is None:
         cfg.settings.external_url = f"http://{common.get_hostname()}:{cfg.settings.listen_port}"

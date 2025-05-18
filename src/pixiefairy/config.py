@@ -1,74 +1,75 @@
 import logging
 import threading
-from pydantic import FilePath
+from pydantic import BaseModel, FilePath
 from typing import List, Dict, Optional
-from pydantic_yaml import YamlModel
+from pydantic_yaml import parse_yaml_raw_as, to_yaml_str
 from . import common
 
 # Models
 
-
-class BootSection(YamlModel):
+class BootSection(BaseModel):
     kernel: str
     initrd: List[str]
-    message: Optional[str]
-    cmdline: Optional[str]
+    message: Optional[str] = None
+    cmdline: Optional[str] = None
 
 
-class NetworkSection(YamlModel):
+class NetworkSection(BaseModel):
     dhcp: bool
-    server: Optional[str]
-    gateway: Optional[str]
-    netmask: Optional[str]
-    dns: Optional[str]
-    ntp: Optional[str]
-    ip: Optional[str]
-    hostname: Optional[str]
-    device: Optional[str]
+    server: Optional[str] = None
+    gateway: Optional[str] = None
+    netmask: Optional[str] = None
+    dns: Optional[str] = None
+    ntp: Optional[str] = None
+    ip: Optional[str] = None
+    hostname: Optional[str] = None
+    device: Optional[str] = None
 
 
-class Defaults(YamlModel):
+class Defaults(BaseModel):
     boot: BootSection
     net: NetworkSection
-    deny_unknown_clients: bool
-    role: str
+    deny_unknown_clients: bool = True
 
 
-class MacEntry(YamlModel):
-    boot: Optional[BootSection]
-    net: Optional[NetworkSection]
-    role: Optional[str]
+class MacEntry(BaseModel):
+    boot: Optional[BootSection] = None
+    net: Optional[NetworkSection] = None
 
 
-class Settings(YamlModel):
-    api_key: Optional[str]
-    listen_address: Optional[str]
-    listen_port: Optional[int]
-    external_url: Optional[str]
-    config_file: Optional[FilePath]
-    template_dir: Optional[FilePath]
+class Settings(BaseModel):
+    api_key: Optional[str] = None
+    listen_address: Optional[str] = None
+    listen_port: Optional[int] = None
+    external_url: Optional[str] = None
+    config_file: Optional[FilePath] = None
     defaults: Defaults
-    mapping: Optional[Dict[str, MacEntry]]
+    mapping: Optional[Dict[str, MacEntry]] = None
 
 
-class BootResponse(YamlModel):
+class BootResponse(BaseModel):
     kernel: str
     initrd: List[str]
-    message: Optional[str]
-    cmdline: Optional[str]
+    message: Optional[str] = None
+    cmdline: Optional[str] = None
 
 
 # Global config, wraps Settings model
 
-
-class Config(object):
+class Config:
     settings: Settings
-    cache: {}
+    cache: Dict
     __lock: threading.Lock
 
     def __init__(self) -> None:
-        self.settings: Settings = Settings(
-            defaults=Defaults(boot=BootSection(kernel="", initrd=[""]), net=NetworkSection(dhcp=True), deny_unknown_clients=False, role="worker"), mapping={}
+        # Initialize with default empty settings
+        self.settings = Settings(
+            defaults=Defaults(
+                boot=BootSection(kernel="", initrd=[""]),
+                net=NetworkSection(dhcp=True),
+                deny_unknown_clients=False,
+            ),
+            mapping={}
         )
         self.cache = {}
         self.__lock = threading.Lock()
@@ -76,40 +77,43 @@ class Config(object):
     def fromFile(self, filename: str) -> bool:
         try:
             self.__lock.acquire()
-            self.settings = Settings.parse_file(filename, proto="yaml")
+            with open(filename, 'r') as f:
+                raw = f.read()
+            self.settings = parse_yaml_raw_as(Settings, raw)
         except Exception as e:
-            logging.error(f"exception {e}")
+            logging.error(f"Exception reading config file: {e}")
             return False
         finally:
             self.__lock.release()
         return True
 
     def toFile(self, filename: str) -> bool:
-        if filename is None:
+        if not filename:
             return False
         try:
             with open(filename, "w") as c:
                 self.__lock.acquire()
-                settings: Settings = self.settings.copy()
+                settings = self.settings.copy()
                 settings.config_file = None
                 if settings.external_url == common.get_hostname():
                     settings.external_url = None
-                c.write(settings.yaml(exclude_none=True, exclude_unset=True))
+                yaml_str = to_yaml_str(settings, exclude_none=True, exclude_unset=True)
+                c.write(yaml_str)
         except Exception as e:
-            logging.error(f"error {e}")
+            logging.error(f"Error writing config file: {e}")
             return False
         finally:
             self.__lock.release()
         return True
 
     def __iter__(self):
-        yield from self.settings.dict()
+        yield from self.settings.dict().items()
 
     def __str__(self) -> str:
-        return self.settings.__str__()
+        return str(self.settings)
 
     def __repr__(self) -> str:
-        return self.settings.__repr__()
+        return repr(self.settings)
 
-
+# Singleton instance
 cfg = Config()

@@ -11,7 +11,6 @@ def parse_mac(mac: str) -> BootResponse:
     net = {k: v for k, v in cfg.settings.defaults.net.dict().items() if k not in ["dhcp"]}
     use_dhcp = cfg.settings.defaults.net.dhcp
     net_cmdline = ""
-    role = cfg.settings.defaults.role
 
     if cfg.settings.defaults.deny_unknown_clients and mac not in cfg.settings.mapping:
         logging.warning(f"Unknown mac address {mac}, blocking boot process")
@@ -31,13 +30,10 @@ def parse_mac(mac: str) -> BootResponse:
             for k, v in mapping.net.dict().items():
                 if v is not None and k not in ["dhcp"]:
                     net[k] = v
-        # override dhcp with parameters from mapping
-        if mapping.net.dhcp is not None:
-            use_dhcp = mapping.net.dhcp
 
-        # override role with paramters from mapping
-        if mapping.role is not None:
-            role = mapping.role
+            # override dhcp with parameters from mapping
+            if mapping.net.dhcp is not None:
+                use_dhcp = mapping.net.dhcp
 
     # enable net cmdline if required (dhcp=false)
     if not use_dhcp:
@@ -51,11 +47,8 @@ def parse_mac(mac: str) -> BootResponse:
         ntp = net["ntp"] if "ntp" in net else ""
         net_cmdline = f" ip={ip}:{server}:{gateway}:{netmask}:{hostname}:{device}:off:{dns}::{ntp}"
 
-    # add extra_cmdline
-    extra_cmdline = f" talos.config={cfg.settings.external_url}/v1/cluster/{role}"
-
-    ret["cmdline"] = f"{ret['cmdline']}{net_cmdline}{extra_cmdline}"
+    ret["cmdline"] = f"{ret['cmdline']}{net_cmdline}"
 
     logging.info(ret)
 
-    return BootResponse.parse_raw(yaml.safe_dump(ret))
+    return BootResponse(**ret)
