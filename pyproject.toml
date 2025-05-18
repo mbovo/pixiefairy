@@ -24,9 +24,9 @@ ignore = [
 
 [tool.poetry]
 name = "pixiefairy"
-version = "0.2.4"
+version = "0.2.5"
 description = "Pixiefairy a Pixiecore API server companion"
-authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
+authors = ["Manuel Bovo <manuel.bovo@gmail.com>", "Niklas Halonen <niklas.halonen@protonmail.com>"]
 license = "Apache-2.0"
 repository = "https://github.com/mbovo/pixiefairy"
 readme = "README.md"
