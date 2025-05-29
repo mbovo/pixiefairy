@@ -1,15 +1,19 @@
-import signal
-import typer
-import pkg_resources
 import logging
+import signal
 import uuid
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Optional
 
-from . import server, common
+import typer
+
+from . import common, server
 from .config import cfg
 
-VERSION = pkg_resources.get_distribution("pixiefairy").version
+try:
+    VERSION = version("pixiefairy")
+except PackageNotFoundError:
+    VERSION = "unknown"
 
 cli = typer.Typer()
 
@@ -88,4 +92,5 @@ def set_sig_handler(funcname, avoid=["SIG_DFL", "SIGSTOP", "SIGKILL", "SIG_BLOCK
             signum = getattr(signal, i)
             signal.signal(signum, funcname)
         except (OSError, RuntimeError, ValueError) as m:  # OSError for Python3, RuntimeError for 2
+            logging.warning("Skipping {} {}".format(i, m))
             logging.warning("Skipping {} {}".format(i, m))
