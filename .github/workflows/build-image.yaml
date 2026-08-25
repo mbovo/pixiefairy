@@ -54,7 +54,9 @@ jobs:
           virtualenvs-in-project: true
       - uses: extractions/setup-just@v3
       - run: just setup
-      - run: just publish
+      - run: just build
+      - name: "Release to pypi"
+        uses: pypa/gh-action-pypi-publish@release/v1
 
   build-image:
     name: "Build and push Docker image"
