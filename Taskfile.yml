@@ -73,7 +73,7 @@ tasks:
   test:
     desc: Run python test and coverage
     cmds:
-      - pytest --cov=pdh .
+      - poetry run pytest --cov=pixiefairy .
 
   build:
     desc: "Build python wheel"
