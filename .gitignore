@@ -6,5 +6,4 @@ dist/*
 .coverage
 *__pycache__
 *.ruff_cache
-.task/*
 old/

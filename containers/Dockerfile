@@ -1,11 +1,3 @@
-# FROM python:3.11-slim as builder
-# WORKDIR /app
-# COPY . /app/
-# RUN apt-get update && apt-get install -y curl=* \
-#   && sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d \
-#   && pip install --no-cache-dir poetry==1.4.0 \
-#   && ./bin/task build
-
 FROM python:3.10-slim
 LABEL org.opencontainers.image.source="https://github.com/mbovo/pixiefairy"
 LABEL org.opencontainers.image.authors="Manuel Bovo"

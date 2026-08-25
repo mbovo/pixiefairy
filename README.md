@@ -55,15 +55,16 @@ mapping:  # optional
 
 ## Dev Requirements
 
-In order to partecipate to the development you need the following requirements
+In order to participate in development you need the following requirements:
 
-- [Taskfile](https://taskfile.dev)
-- Python >=3.9
+- [just](https://just.systems)
+- [Poetry](https://python-poetry.org)
+- Python 3.14
 
 And bootstrap the local dev environment with:
 
 ```bash
-task setup
+just setup
 ```
 
 This will setup locally a python virtualenv with all the dependencies, ready to start coding

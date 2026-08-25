@@ -41,12 +41,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-      - uses: arduino/setup-task@v2
+      - uses: snok/install-poetry@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: task setup
-      - run: task build
-      - run: task publish
+          version: "2.2.1"
+          virtualenvs-in-project: true
+      - uses: extractions/setup-just@v3
+      - run: just setup
+      - run: just publish
 
   # docker-build:
   #   name: "Build docker image"
