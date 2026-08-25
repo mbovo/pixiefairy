@@ -1,26 +1,55 @@
-# FROM python:3.11-slim as builder
-# WORKDIR /app
-# COPY . /app/
-# RUN apt-get update && apt-get install -y curl=* \
-#   && sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d \
-#   && pip install --no-cache-dir poetry==1.4.0 \
-#   && ./bin/task build
+# syntax=docker/dockerfile:1.7
 
-FROM python:3.10-slim
-LABEL org.opencontainers.image.source="https://github.com/mbovo/pixiefairy"
-LABEL org.opencontainers.image.authors="Manuel Bovo"
-LABEL org.opencontainers.image.maintainers="Manuel Bovo"
-LABEL org.opencontainers.image.licenses="GPL-3.0-or-later"
-LABEL org.opencontainers.image.title="pixiefairy"
+ARG PYTHON_VERSION=3.14
+ARG POETRY_VERSION=2.2.1
 
-RUN groupadd --gid 1000 user && useradd --uid 1000 --gid 1000 -m user
+FROM python:${PYTHON_VERSION}-slim AS builder
+
+ARG POETRY_VERSION
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+	POETRY_NO_INTERACTION=1 \
+	VIRTUAL_ENV=/opt/venv \
+	PATH="/opt/venv/bin:$PATH"
+
+RUN --mount=type=cache,target=/root/.cache/pip /usr/local/bin/python -m pip install "poetry==${POETRY_VERSION}"
+RUN /usr/local/bin/python -m venv "$VIRTUAL_ENV"
+
+WORKDIR /build
+
+COPY pyproject.toml poetry.lock ./
+RUN --mount=type=cache,target=/root/.cache/pypoetry \
+	poetry install --only main --no-root
+
+COPY README.md ./
+COPY src ./src
+RUN poetry build --format wheel \
+	&& python -m pip install --no-cache-dir --no-deps dist/*.whl \
+	&& rm -f "$VIRTUAL_ENV"/bin/pip* \
+	&& find "$VIRTUAL_ENV/lib" -type d -name pip -prune -exec rm -rf {} + \
+	&& find "$VIRTUAL_ENV/lib" -type d -name 'pip-*.dist-info' -prune -exec rm -rf {} + \
+	&& find "$VIRTUAL_ENV" -type d -name __pycache__ -prune -exec rm -rf {} +
+
+FROM python:${PYTHON_VERSION}-slim AS runtime
+
+LABEL org.opencontainers.image.source="https://github.com/mbovo/pixiefairy" \
+	  org.opencontainers.image.authors="Manuel Bovo" \
+	  org.opencontainers.image.maintainers="Manuel Bovo" \
+	  org.opencontainers.image.licenses="Apache-2.0" \
+	  org.opencontainers.image.title="pixiefairy"
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+	PYTHONUNBUFFERED=1 \
+	VIRTUAL_ENV=/opt/venv \
+	PATH="/opt/venv/bin:$PATH"
+
+RUN groupadd --gid 1000 user \
+	&& useradd --no-log-init --uid 1000 --gid user --home-dir /app --no-create-home user \
+	&& install -d -o user -g user /app/templates
+
+COPY --from=builder /opt/venv /opt/venv
+
 WORKDIR /app
-# COPY --from=builder /app/dist/*.whl /app
-COPY ./dist/*.whl /app
-RUN apt-get update && apt-get install -y gcc
-RUN pip install --no-cache-dir /app/pixiefairy-*.whl>=0.1.0
-RUN mkdir /app/templates && chown -R user:user /app/
-USER user
+USER 1000:1000
 EXPOSE 5000
 ENTRYPOINT ["pixiefairy"]
 CMD ["start", "--help"]

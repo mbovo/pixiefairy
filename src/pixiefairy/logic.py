@@ -1,14 +1,13 @@
 import logging
 
-import yaml
-from .config import cfg, BootResponse
+from .config import BootResponse, cfg
 
 
 def parse_mac(mac: str) -> BootResponse:
 
     # defaults
-    ret = {k: v for k, v in cfg.settings.defaults.boot.dict().items() if k in ["kernel", "initrd", "message", "cmdline"]}
-    net = {k: v for k, v in cfg.settings.defaults.net.dict().items() if k not in ["dhcp"]}
+    ret = {k: v for k, v in cfg.settings.defaults.boot.model_dump().items() if k in ["kernel", "initrd", "message", "cmdline"]}
+    net = {k: v for k, v in cfg.settings.defaults.net.model_dump().items() if k not in ["dhcp"]}
     use_dhcp = cfg.settings.defaults.net.dhcp
     net_cmdline = ""
     role = cfg.settings.defaults.role
@@ -22,18 +21,18 @@ def parse_mac(mac: str) -> BootResponse:
 
         # override boot defaults with parameters from mapping
         if mapping.boot is not None:
-            for k, v in mapping.boot.dict().items():
+            for k, v in mapping.boot.model_dump().items():
                 if v is not None:
                     ret[k] = v
 
         # override net defaults with paramenters from mapping
         if mapping.net is not None:
-            for k, v in mapping.net.dict().items():
+            for k, v in mapping.net.model_dump().items():
                 if v is not None and k not in ["dhcp"]:
                     net[k] = v
-        # override dhcp with parameters from mapping
-        if mapping.net.dhcp is not None:
-            use_dhcp = mapping.net.dhcp
+            # override dhcp with parameters from mapping
+            if mapping.net.dhcp is not None:
+                use_dhcp = mapping.net.dhcp
 
         # override role with paramters from mapping
         if mapping.role is not None:
@@ -58,4 +57,4 @@ def parse_mac(mac: str) -> BootResponse:
 
     logging.info(ret)
 
-    return BootResponse.parse_raw(yaml.safe_dump(ret))
+    return BootResponse.model_validate(ret)

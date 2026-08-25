@@ -6,11 +6,11 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v5
+    - uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
-    - uses: pre-commit/action@v3.0.0
+        python-version: "3.14"
+    - uses: pre-commit/action@v3.0.1
   tagging:
     name: "Tagging (dry-run)"
     needs: pre-commit
@@ -18,29 +18,34 @@ jobs:
     outputs:
       net_tag: ${{ steps.tag_version.outputs.new_tag }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Bump version and push tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           dry_run: true
       - run: echo "Calculated Next Tag is ${{ steps.tag_version.outputs.tags }}"
       #use this with ${{needs.job1.outputs.output1}}
-  test:
+  coverage:
+    name: "Coverage (minimum 90%)"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-      - uses: arduino/setup-task@v1
+          python-version: "3.14"
+      - uses: snok/install-poetry@v1
+        with:
+          version: "2.2.1"
+          virtualenvs-in-project: true
+      - uses: extractions/setup-just@v3
       - name: Prepare dev env
-        run: task setup
-      - name: Lint and tests
-        run: |
-          source .venv/bin/activate
-          task test
+        run: just setup
+      - name: Run coverage gate
+        run: just test
   build:
     name: "Test build wheel"
     runs-on: ubuntu-latest
@@ -48,15 +53,17 @@ jobs:
       - pre-commit
       - tagging
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-      - uses: arduino/setup-task@v1
-      - run: task setup
-      - run: |
-          source .venv/bin/activate
-          task build
+          python-version: "3.14"
+      - uses: snok/install-poetry@v1
+        with:
+          version: "2.2.1"
+          virtualenvs-in-project: true
+      - uses: extractions/setup-just@v3
+      - run: just setup
+      - run: just build
 
   # docker-build:
   #   name: "Test Build"

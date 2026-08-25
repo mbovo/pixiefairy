@@ -1,7 +1,7 @@
 # Pixie Fairy - a Pixiecore API companion
 
 [![](https://img.shields.io/pypi/v/pixiecore.svg)](https://pypi.org/pypi/pixiefairy)
-[![Tag and build](https://github.com/mbovo/pixiefairy/actions/workflows/build-image.yml/badge.svg)](https://github.com/mbovo/pixiefairy/actions/workflows/build-image.yml)
+[![Tag and build](https://github.com/mbovo/pixiefairy/actions/workflows/build-image.yaml/badge.svg)](https://github.com/mbovo/pixiefairy/actions/workflows/build-image.yaml)
 
 `Pixiefairy` is a companion for [pixiecore](https://github.com/danderson/netboot/tree/master/pixiecore) a tool to manage network booting of machines.
 `Pixiecore` in [API mode](https://github.com/danderson/netboot/tree/master/pixiecore#pixiecore-in-api-mode) send a request to an external service for each pxe booting event; *pixiefairy* is that service, answering to api calls and serving the configured info, like the kernel, the initrd and the command line to boot.
@@ -55,15 +55,16 @@ mapping:  # optional
 
 ## Dev Requirements
 
-In order to partecipate to the development you need the following requirements
+In order to participate in development you need the following requirements:
 
-- [Taskfile](https://taskfile.dev)
-- Python >=3.9
+- [just](https://just.systems)
+- [Poetry](https://python-poetry.org)
+- Python 3.14
 
 And bootstrap the local dev environment with:
 
 ```bash
-task setup
+just setup
 ```
 
 This will setup locally a python virtualenv with all the dependencies, ready to start coding

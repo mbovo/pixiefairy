@@ -1,61 +1,63 @@
 import logging
 import threading
-from pydantic import FilePath
-from typing import List, Dict, Optional
-from pydantic_yaml import YamlModel
+from typing import Dict, List, Optional
+
+from pydantic import BaseModel, Field, FilePath
+from pydantic_yaml import parse_yaml_file_as, to_yaml_str
+
 from . import common
 
 # Models
 
 
-class BootSection(YamlModel):
+class BootSection(BaseModel):
     kernel: str
     initrd: List[str]
-    message: Optional[str]
-    cmdline: Optional[str]
+    message: Optional[str] = None
+    cmdline: Optional[str] = None
 
 
-class NetworkSection(YamlModel):
+class NetworkSection(BaseModel):
     dhcp: bool
-    server: Optional[str]
-    gateway: Optional[str]
-    netmask: Optional[str]
-    dns: Optional[str]
-    ntp: Optional[str]
-    ip: Optional[str]
-    hostname: Optional[str]
-    device: Optional[str]
+    server: Optional[str] = None
+    gateway: Optional[str] = None
+    netmask: Optional[str] = None
+    dns: Optional[str] = None
+    ntp: Optional[str] = None
+    ip: Optional[str] = None
+    hostname: Optional[str] = None
+    device: Optional[str] = None
 
 
-class Defaults(YamlModel):
+class Defaults(BaseModel):
     boot: BootSection
     net: NetworkSection
     deny_unknown_clients: bool
     role: str
 
 
-class MacEntry(YamlModel):
-    boot: Optional[BootSection]
-    net: Optional[NetworkSection]
-    role: Optional[str]
+class MacEntry(BaseModel):
+    boot: Optional[BootSection] = None
+    net: Optional[NetworkSection] = None
+    role: Optional[str] = None
 
 
-class Settings(YamlModel):
-    api_key: Optional[str]
-    listen_address: Optional[str]
-    listen_port: Optional[int]
-    external_url: Optional[str]
-    config_file: Optional[FilePath]
-    template_dir: Optional[FilePath]
+class Settings(BaseModel):
+    api_key: Optional[str] = None
+    listen_address: Optional[str] = None
+    listen_port: Optional[int] = None
+    external_url: Optional[str] = None
+    config_file: Optional[FilePath] = None
+    template_dir: Optional[FilePath] = None
     defaults: Defaults
-    mapping: Optional[Dict[str, MacEntry]]
+    mapping: Dict[str, MacEntry] = Field(default_factory=dict)
 
 
-class BootResponse(YamlModel):
+class BootResponse(BaseModel):
     kernel: str
     initrd: List[str]
-    message: Optional[str]
-    cmdline: Optional[str]
+    message: Optional[str] = None
+    cmdline: Optional[str] = None
 
 
 # Global config, wraps Settings model
@@ -63,7 +65,7 @@ class BootResponse(YamlModel):
 
 class Config(object):
     settings: Settings
-    cache: {}
+    cache: dict
     __lock: threading.Lock
 
     def __init__(self) -> None:
@@ -75,35 +77,30 @@ class Config(object):
 
     def fromFile(self, filename: str) -> bool:
         try:
-            self.__lock.acquire()
-            self.settings = Settings.parse_file(filename, proto="yaml")
+            with self.__lock:
+                self.settings = parse_yaml_file_as(Settings, filename)
         except Exception as e:
             logging.error(f"exception {e}")
             return False
-        finally:
-            self.__lock.release()
         return True
 
     def toFile(self, filename: str) -> bool:
         if filename is None:
             return False
         try:
-            with open(filename, "w") as c:
-                self.__lock.acquire()
-                settings: Settings = self.settings.copy()
+            with self.__lock, open(filename, "w") as c:
+                settings: Settings = self.settings.model_copy()
                 settings.config_file = None
                 if settings.external_url == common.get_hostname():
                     settings.external_url = None
-                c.write(settings.yaml(exclude_none=True, exclude_unset=True))
+                c.write(to_yaml_str(settings, exclude_none=True, exclude_unset=True))
         except Exception as e:
             logging.error(f"error {e}")
             return False
-        finally:
-            self.__lock.release()
         return True
 
     def __iter__(self):
-        yield from self.settings.dict()
+        yield from self.settings.model_dump().items()
 
     def __str__(self) -> str:
         return self.settings.__str__()

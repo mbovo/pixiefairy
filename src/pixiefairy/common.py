@@ -1,7 +1,8 @@
 import logging
-from loguru import logger
-import urllib3
 import socket
+
+import urllib3
+from loguru import logger
 
 
 class InterceptHandler(logging.Handler):
@@ -27,4 +28,15 @@ def setup_logging(level: str = "INFO"):
 
 
 def get_hostname() -> str:
-    return socket.gethostbyname(socket.gethostname())
+    try:
+        return socket.gethostbyname(socket.gethostname())
+    except OSError:
+        # Fall back to outbound IP detection when the hostname is not resolvable.
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+        except OSError:
+            return "127.0.0.1"
+        finally:
+            sock.close()
