@@ -1,18 +1,15 @@
 [tool.black]
 line-length = 180
 
-[tool.flake8]
-max-line-length = 172
-ignore = "E203"
-
-
 [tool.ruff]
+line-length = 172
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "F",  # pyflakes
     "C",  # flake8-comprehensions
 ]
-line-length = 172
 # Allow unused variables when underscore-prefixed.
 ignore = [
     "E501",
@@ -22,42 +19,48 @@ ignore = [
 ]
 
 
-[tool.poetry]
+[project]
 name = "pixiefairy"
 version = "0.1.4"
 description = "Pixiefairy a Pixiecore API server companion"
-authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
+authors = [
+    { name = "Manuel Bovo", email = "manuel.bovo@gmail.com" },
+]
 license = "Apache-2.0"
-repository = "https://github.com/mbovo/pixiefairy"
 readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dynamic = ["dependencies"]
+
+[project.urls]
+Repository = "https://github.com/mbovo/pixiefairy"
+
+[project.scripts]
+pixiefairy = "pixiefairy.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.14"
-click = "^8.2.1"
-colorama = "^0.4.4"
-loguru = "^0.6.0"
-gevent = "^25.5.0"
-PyYAML = "^6.0"
-urllib3 = ">=1.26.9,<3.0.0"
-fastapi = "^0.75.2"
-uvicorn = ">=0.34.2,<0.43.0"
-pydantic-yaml = "^0.6.3"
-typer = ">=0.4.1,<0.25.0"
-shellingham = "^1.4.0"
+click = "^8.4.2"
+colorama = "^0.4.6"
+loguru = "^0.7.3"
+gevent = "^26.8.0"
+PyYAML = "^6.0.3"
+urllib3 = "^2.7.0"
+fastapi = "^0.141.1"
+uvicorn = "^0.52.4"
+pydantic-yaml = "^1.7.0"
+typer = "^0.27.1"
+shellingham = "^1.5.4"
+pydantic = "^2.13.4"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.11.11"
-pytest = "^7.1.1"
-pytest-cov = "^3.0.0"
-pytest-xdist = "^2.5.0"
-flake8 = "^7.2.0"
-pylint = "^2.12.2"
-autopep8 = "^1.6.0"
-black = "^22.3.0"
+ruff = "^0.16.4"
+pytest = "^9.1.1"
+pytest-cov = "^7.1.0"
+pytest-xdist = "^3.8.0"
+flake8 = "^7.3.0"
+pylint = "^4.0.7"
+autopep8 = "^2.3.2"
+black = "^26.5.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-pixiefairy = "pixiefairy.cli:main"
