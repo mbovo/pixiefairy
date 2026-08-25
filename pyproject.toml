@@ -29,7 +29,20 @@ authors = [
 license = "Apache-2.0"
 readme = "README.md"
 requires-python = ">=3.14,<3.15"
-dynamic = ["dependencies"]
+dependencies = [
+    "click (>=8.4.2,<9.0.0)",
+    "colorama (>=0.4.6,<0.5.0)",
+    "loguru (>=0.7.3,<0.8.0)",
+    "gevent (>=26.8.0,<27.0.0)",
+    "PyYAML (>=6.0.3,<7.0.0)",
+    "urllib3 (>=2.7.0,<3.0.0)",
+    "fastapi (>=0.141.1,<0.142.0)",
+    "uvicorn (>=0.52.4,<0.53.0)",
+    "pydantic-yaml (>=1.7.0,<2.0.0)",
+    "typer (>=0.27.1,<0.28.0)",
+    "shellingham (>=1.5.4,<2.0.0)",
+    "pydantic (>=2.13.4,<3.0.0)",
+]
 
 [project.urls]
 Repository = "https://github.com/mbovo/pixiefairy"
@@ -37,31 +50,19 @@ Repository = "https://github.com/mbovo/pixiefairy"
 [project.scripts]
 pixiefairy = "pixiefairy.cli:main"
 
-[tool.poetry.dependencies]
-click = "^8.4.2"
-colorama = "^0.4.6"
-loguru = "^0.7.3"
-gevent = "^26.8.0"
-PyYAML = "^6.0.3"
-urllib3 = "^2.7.0"
-fastapi = "^0.141.1"
-uvicorn = "^0.52.4"
-pydantic-yaml = "^1.7.0"
-typer = "^0.27.1"
-shellingham = "^1.5.4"
-pydantic = "^2.13.4"
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.16.4"
-pytest = "^9.1.1"
-pytest-cov = "^7.1.0"
-pytest-xdist = "^3.8.0"
-flake8 = "^7.3.0"
-pylint = "^4.0.7"
-autopep8 = "^2.3.2"
-black = "^26.5.1"
-pre-commit = "^4.6.2"
+[dependency-groups]
+dev = [
+    "ruff (>=0.16.4,<0.17.0)",
+    "pytest (>=9.1.1,<10.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)",
+    "pytest-xdist (>=3.8.0,<4.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)",
+    "pylint (>=4.0.7,<5.0.0)",
+    "autopep8 (>=2.3.2,<3.0.0)",
+    "black (>=26.5.1,<27.0.0)",
+    "pre-commit (>=4.6.2,<5.0.0)",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
