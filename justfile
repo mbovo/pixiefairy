@@ -18,7 +18,7 @@ setup:
 
 # Run tests and coverage
 test:
-    poetry run pytest --cov=pixiefairy .
+    poetry run pytest --cov=pixiefairy --cov-branch --cov-report=term-missing --cov-fail-under=90 .
 
 # Build the Python package
 build:

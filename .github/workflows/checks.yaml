@@ -27,8 +27,11 @@ jobs:
           dry_run: true
       - run: echo "Calculated Next Tag is ${{ steps.tag_version.outputs.tags }}"
       #use this with ${{needs.job1.outputs.output1}}
-  test:
+  coverage:
+    name: "Coverage (minimum 90%)"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
@@ -41,7 +44,7 @@ jobs:
       - uses: extractions/setup-just@v3
       - name: Prepare dev env
         run: just setup
-      - name: Lint and tests
+      - name: Run coverage gate
         run: just test
   build:
     name: "Test build wheel"

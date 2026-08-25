@@ -47,7 +47,7 @@ def webapp_run():
     """Run WEB Server"""
     global wsgi
     try:
-        uvicorn_log_config = uvicorn_config.LOGGING_CONFIG
+        uvicorn_log_config = uvicorn_config.LOGGING_CONFIG.copy()
         del uvicorn_log_config["loggers"]
         app.mount("/v1/cluster", StaticFiles(directory=str(cfg.settings.template_dir)), name="cluster")
 

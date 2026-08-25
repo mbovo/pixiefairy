@@ -30,9 +30,9 @@ def parse_mac(mac: str) -> BootResponse:
             for k, v in mapping.net.model_dump().items():
                 if v is not None and k not in ["dhcp"]:
                     net[k] = v
-        # override dhcp with parameters from mapping
-        if mapping.net.dhcp is not None:
-            use_dhcp = mapping.net.dhcp
+            # override dhcp with parameters from mapping
+            if mapping.net.dhcp is not None:
+                use_dhcp = mapping.net.dhcp
 
         # override role with paramters from mapping
         if mapping.role is not None:

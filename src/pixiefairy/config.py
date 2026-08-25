@@ -77,21 +77,18 @@ class Config(object):
 
     def fromFile(self, filename: str) -> bool:
         try:
-            self.__lock.acquire()
-            self.settings = parse_yaml_file_as(Settings, filename)
+            with self.__lock:
+                self.settings = parse_yaml_file_as(Settings, filename)
         except Exception as e:
             logging.error(f"exception {e}")
             return False
-        finally:
-            self.__lock.release()
         return True
 
     def toFile(self, filename: str) -> bool:
         if filename is None:
             return False
         try:
-            with open(filename, "w") as c:
-                self.__lock.acquire()
+            with self.__lock, open(filename, "w") as c:
                 settings: Settings = self.settings.model_copy()
                 settings.config_file = None
                 if settings.external_url == common.get_hostname():
@@ -100,12 +97,10 @@ class Config(object):
         except Exception as e:
             logging.error(f"error {e}")
             return False
-        finally:
-            self.__lock.release()
         return True
 
     def __iter__(self):
-        yield from self.settings.model_dump()
+        yield from self.settings.model_dump().items()
 
     def __str__(self) -> str:
         return self.settings.__str__()
