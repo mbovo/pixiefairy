@@ -1,19 +1,20 @@
-import threading
 import concurrent.futures
 import logging
+import threading
 
-# from gevent.pywsgi import WSGIServer
+from fastapi.staticfiles import StaticFiles
+from uvicorn import Config, Server
+from uvicorn import config as uvicorn_config
 
-from .webapp import app
 from .config import cfg
 
-from uvicorn import Server, Config, config as uvicorn_config
-from fastapi.staticfiles import StaticFiles
+# from gevent.pywsgi import WSGIServer
+from .webapp import app
 
-thread_pool: concurrent.futures.ThreadPoolExecutor
+thread_pool: concurrent.futures.ThreadPoolExecutor | None = None
 # wsgi: WSGIServer
-wsgi: Server
-stop_event: threading.Event
+wsgi: Server | None = None
+stop_event: threading.Event | None = None
 
 
 def run():
@@ -33,11 +34,13 @@ def run():
 
 
 def stop():
-    global thread_pool, stop_event, wsgi
     logging.info("signalling threads to stop")
-    stop_event.set()
-    thread_pool.shutdown(wait=False, cancel_futures=True)
-    wsgi.force_exit = True
+    if stop_event is not None:
+        stop_event.set()
+    if thread_pool is not None:
+        thread_pool.shutdown(wait=False, cancel_futures=True)
+    if wsgi is not None:
+        wsgi.force_exit = True
 
 
 def webapp_run():
@@ -48,7 +51,8 @@ def webapp_run():
         del uvicorn_log_config["loggers"]
         app.mount("/v1/cluster", StaticFiles(directory=str(cfg.settings.template_dir)), name="cluster")
 
-        wsgi = Server(Config(app, host=cfg.settings.listen_address, port=int(cfg.settings.listen_port), log_config=uvicorn_log_config)).run()
+        wsgi = Server(Config(app, host=cfg.settings.listen_address, port=int(cfg.settings.listen_port), log_config=uvicorn_log_config))
+        wsgi.run()
     except Exception as e:
         logging.error(f"Cannot start web server: {e}")
 
