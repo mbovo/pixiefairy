@@ -52,7 +52,7 @@ pixiefairy = "pixiefairy.cli:main"
 
 [dependency-groups]
 dev = [
-    "ruff (>=0.16.4,<0.17.0)",
+    "ruff (>=0.16.4,<0.18.0)",
     "pytest (>=9.1.1,<10.0.0)",
     "pytest-cov (>=7.1.0,<8.0.0)",
     "pytest-xdist (>=3.8.0,<4.0.0)",
